@@ -1,30 +1,29 @@
-from telebot import TeleBot, types
 from bs4 import BeautifulSoup
+from aiogram import Bot, types
 import lxml
+from aiogram.dispatcher import Dispatcher
+from aiogram.utils import executor
 import config
 from urllib import parse
 import requests
 import os
 from random import shuffle
 
-bot = TeleBot(config.token)
+bot = Bot(config.token)
+dp = Dispatcher(bot)
 
 
-def main():
-    bot.polling()
+@dp.message_handler(commands=['start'])
+async def start(message):
+    await bot.send_message(message.chat.id, 'Привет, этот бот умеет подбирать мебель под твою комнату\n'
+                                            'Просто отправь фото боту, и он автоматически ее подберет')
 
 
-@bot.message_handler(commands=['start'])
-def start(message):
-    bot.send_message(message.chat.id, 'Привет, этот бот умеет подбирать мебель под твою комнату\n'
-                                      'Просто отправь фото боту, и он автоматически ее подберет')
-
-
-@bot.message_handler()
-def echo_message(message):
+@dp.message_handler()
+async def echo_message(message):
     # Use a breakpoint in the code line below to debug your script.
-    bot.send_message(message.chat.id, f'Hi, {message.text}')
+    await bot.send_message(message.chat.id, f'Hi, {message.text}')
 
 
 if __name__ == '__main__':
-    main()
+    executor.start_polling(dp)
