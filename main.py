@@ -1,13 +1,11 @@
-from bs4 import BeautifulSoup
 from aiogram import Bot, types
-import lxml
+from PIL import Image
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 import config
-from urllib import parse
-import requests
+from functions import transorm_photo, get_answer
+from model import model
 import os
-from random import shuffle
 
 bot = Bot(config.token)
 dp = Dispatcher(bot)
@@ -19,10 +17,42 @@ async def start(message):
                                             'Просто отправь фото боту, и он автоматически ее подберет')
 
 
-@dp.message_handler()
-async def echo_message(message):
-    # Use a breakpoint in the code line below to debug your script.
+@dp.message_handler(lambda message: True)
+async def echo_all(message):
     await bot.send_message(message.chat.id, f'Hi, {message.text}')
+
+
+@dp.message_handler(content_types=['photo'])
+async def echo_photo(message):
+    try:
+        file_info = await bot.get_file(message.photo[-1].file_id)
+        downloaded_file = await bot.download_file(file_info.file_path)
+        img = Image.open(downloaded_file)
+        images_transormed = transorm_photo(img)
+        answer = get_answer(model, images_transormed)
+        await bot.send_message(message.chat.id, f'{answer}')
+
+        # await bot.send_photo(message.chat.id, downloaded_file)
+    except Exception:
+        await bot.send_message(message.chat.id, 'Неверный формат файла')
+
+
+@dp.message_handler(content_types=['document'])
+async def echo_photo(message):
+    try:
+        file_info = await bot.get_file(message.document.file_id)
+        downloaded_file = await bot.download_file(file_info.file_path)
+
+        im = Image.open(downloaded_file)
+        rgb_im = im.convert('RGB')
+        rgb_im.save(f'photo/photo_{message.chat.id}.jpg')
+
+        img = Image.open(f'photo/photo_{message.chat.id}.jpg')
+        images_transormed = transorm_photo(img)
+        answer = get_answer(model, images_transormed)
+        await bot.send_message(message.chat.id, f'{answer}')
+    except Exception:
+        await bot.send_message(message.chat.id, 'Неверный формат файла')
 
 
 if __name__ == '__main__':

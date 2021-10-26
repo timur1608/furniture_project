@@ -18,9 +18,9 @@ def get_photo(url):
 
 if __name__ == '__main__':
     csv_file = pd.read_csv('db/IKEA_SA_Furniture_Web_Scrapings_sss.csv', index_col=0)
-    array = csv_file[csv_file['category'] == 'Sofas & armchairs']['link']
+    array = csv_file[csv_file['category'] == 'Wardrobes']['link']
     for i, j in zip(range(len(array)), array):
-        output_image = f'sofas_and_armchairs/output{array.index[i]}.png'
+        output_image = f'Wardrobes/output{array.index[i]}.png'
         file = open(output_image, 'wb')
         photo = get_photo(j)
         if photo:
