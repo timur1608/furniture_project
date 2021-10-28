@@ -23,3 +23,8 @@ def get_answer(model, images):
 def crop_photo(photo):
     resnet_transforms = transforms.CenterCrop(160)
     return resnet_transforms(photo)
+
+
+def return_photo_from_db(photo_id):
+    photo = open(f'db/photo_id/{photo_id}.jpg', 'rb')
+    return photo

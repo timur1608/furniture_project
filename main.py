@@ -3,9 +3,10 @@ from PIL import Image
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 import config
-from functions import transorm_photo, get_answer, crop_photo
+from functions import transorm_photo, get_answer, crop_photo, return_photo_from_db
 from model import model
 from photo_with_mask import get_color
+from furniture_correlator import correlate
 
 bot = Bot(config.token)
 dp = Dispatcher(bot)
@@ -26,17 +27,19 @@ async def echo_all(message):
 
 @dp.message_handler(content_types=['photo'])
 async def echo_photo(message):
-    try:
-        file_info = await bot.get_file(message.photo[-1].file_id)
-        downloaded_file = await bot.download_file(file_info.file_path)
-        img = Image.open(downloaded_file)
-        images_transormed = transorm_photo(img)
-        img = crop_photo(img)
-        color = get_color(img)
-        answer = get_answer(model, images_transormed)
-        await bot.send_message(message.chat.id, f'{answer} цвета {color}')
-    except Exception:
-        await bot.send_message(message.chat.id, 'Неверный формат файла')
+    file_info = await bot.get_file(message.photo[-1].file_id)
+    downloaded_file = await bot.download_file(file_info.file_path)
+    img = Image.open(downloaded_file)
+    images_transormed = transorm_photo(img)
+    img = crop_photo(img)
+    color = get_color(img)
+    answer = get_answer(model, images_transormed)
+    result = correlate(answer, color)
+    for i in result:
+        photo = return_photo_from_db(i[1])
+        await bot.send_message(message.chat.id, i[0])
+        await bot.send_photo(message.chat.id, photo=photo)
+    photo.close()
 
 
 @dp.message_handler(content_types=['document'])
