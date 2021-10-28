@@ -15,6 +15,11 @@ def transorm_photo(photo):
 
 
 def get_answer(model, images):
-    dct = {1: 'armchair', 2: 'bed', 3: 'chair', 0:'dresser', 4: 'sofa', 5:'swivelchair', 6:'table', 7:'wardrobe'}
+    dct = {1: 'armchair', 2: 'bed', 3: 'chair', 0: 'dresser', 4: 'sofa', 5: 'swivelchair', 6: 'table', 7: 'wardrobe'}
     model_output = model(images.reshape((1, 3, 224, 224)))
     return dct[np.argmax(model_output.data.cpu().numpy())]
+
+
+def crop_photo(photo):
+    resnet_transforms = transforms.CenterCrop(160)
+    return resnet_transforms(photo)
