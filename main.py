@@ -1,5 +1,5 @@
-from aiogram import Bot, types
 from PIL import Image
+from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram import md

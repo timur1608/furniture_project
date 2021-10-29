@@ -9,7 +9,8 @@ def correlate(type, color=None):
     colors = {'yellow': ['red', 'blue', 'dark pink', 'green'], 'orange': ['pink', 'blue'],
               'red': ['blue', 'yellow', 'dark blue'],
               'pink': ['orange', 'blue'], 'black': ['white'], 'dark blue': ['red', 'yellow'], 'white': ['black'],
-              'green': ['yellow'], 'dark brown': ['blue'], 'dark pink': ['orange'], 'brown': ['white', 'blue']}
+              'green': ['yellow'], 'dark brown': ['blue'], 'dark pink': ['orange'], 'brown': ['white', 'blue'],
+              'gray': ['black', 'white'], 'blue': ['dark blue', 'green', 'orange']}
     colors_corr = colors[color]
     con = sqlite3.connect('db/furniture.db')
     cur = con.cursor()
