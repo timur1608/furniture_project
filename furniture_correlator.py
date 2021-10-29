@@ -8,8 +8,8 @@ def correlate(type, color=None):
            'swivelchair': ['table']}
     colors = {'yellow': ['red', 'blue', 'dark pink', 'green'], 'orange': ['pink', 'blue'],
               'red': ['blue', 'yellow', 'dark blue'],
-              'pink': ['orange', 'blue'], 'black': 'white', 'dark blue': ['red', 'yellow'], 'white': 'black',
-              'green': 'yellow', 'dark brown': 'blue'}
+              'pink': ['orange', 'blue'], 'black': ['white'], 'dark blue': ['red', 'yellow'], 'white': ['black'],
+              'green': ['yellow'], 'dark brown': ['blue'], 'dark pink': ['orange'], 'brown': ['white', 'blue']}
     colors_corr = colors[color]
     con = sqlite3.connect('db/furniture.db')
     cur = con.cursor()
@@ -25,12 +25,15 @@ def correlate(type, color=None):
         if i[-2] in colors_corr:
             ids.append((i[0], i[1], i[-1]))
     true_types = list()
+    random.shuffle(ids)
     for i in range(3):
-        result = random.choice(ids)
-        if result[-1] not in lst:
-            lst.append(result[-1])
-            true_types.append(result)
+        for result in ids:
+            if result[-1] not in lst:
+                lst.append(result[-1])
+                true_types.append(result)
     while len(true_types) != 3:
-        true_types.append(random.choice(ids))
+        result = random.choice(ids)
+        if result not in true_types:
+            true_types.append(result)
 
     return true_types
